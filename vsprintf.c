@@ -18,7 +18,7 @@ unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 {
 	unsigned long result = 0,value;
 
-	if (!base) {//bash为０，不进行操作
+	if (!base) {//bash不为０，不进行操作
 		base = 10;
 		if (*cp == '0') {
 			base = 8;
