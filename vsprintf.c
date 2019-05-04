@@ -42,7 +42,7 @@ unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 /* we use this so that we can do without the ctype library */
 #define is_digit(c)	((c) >= '0' && (c) <= '9')//判断是不是数字
 
-static int skip_atoi(const char **s)
+static int skip_atoi(const char **s)//把数字字符串转换为数字
 {
 	int i=0;
 
