@@ -8,7 +8,6 @@
 /*
  * Wirzenius wrote this portably, Torvalds fucked it up :-)
  */
-
 #include <stdarg.h>
 #include <linux/types.h>
 #include <linux/string.h>
@@ -18,19 +17,19 @@ unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 {
 	unsigned long result = 0,value;
 
-	if (!base) {//bash不为０，不进行操作
+	if (!base) {                                                                    //bash为０时，进行操作
 		base = 10;
 		if (*cp == '0') {
 			base = 8;
 			cp++;
-			if ((*cp == 'x') && isxdigit(cp[1])) {//判断是否为１６进制
+			if ((*cp == 'x') && isxdigit(cp[1])) {                                  //判断是否为１６进制
 				cp++;
 				base = 16;
 			}
-		}
-	}
+        }
+            }
 	while (isxdigit(*cp) && (value = isdigit(*cp) ? *cp-'0' : (islower(*cp)
-	    ? toupper(*cp) : *cp)-'A'+10) < base) {//转换为大写
+	    ? toupper(*cp) : *cp)-'A'+10) < base) {                                     //转换为大写
 		result = result*base + value;
 		cp++;
 	}
@@ -40,13 +39,13 @@ unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 }
 
 /* we use this so that we can do without the ctype library */
-#define is_digit(c)	((c) >= '0' && (c) <= '9')//判断是不是数字
+#define is_digit(c)	((c) >= '0' && (c) <= '9')                                      //判断是不是数字字符
 
-static int skip_atoi(const char **s)//把数字字符串转换为数字
+static int skip_atoi(const char **s)                                                //把数字字符串转换为整形
 {
 	int i=0;
 
-	while (is_digit(**s))
+	while (is_digit(**s))                                                           //判断是不是数字，是的话累加
 		i = i*10 + *((*s)++) - '0';
 	return i;
 }
@@ -131,8 +130,8 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				   number of chars for from string */
 	int qualifier;		/* 'h', 'l', or 'L' for integer fields */
 
-	for (str=buf ; *fmt ; ++fmt) {//fmt的位置每次向后移动一次并取值，到fmt为\0为止
-		if (*fmt != '%') {//如果不是％，跳过这次循环
+	for (str=buf ; *fmt ; ++fmt) {                                                  //fmt的位置每次向后移动一次并取值，到fmt为\0为止
+		if (*fmt != '%') {                                                          //如果不是％，跳过这次循环
 			*str++ = *fmt;
 			continue;
 		}
@@ -151,11 +150,11 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 		
 		/* get field width */
 		field_width = -1;
-		if (is_digit(*fmt))//如果当前字符是数字
+		if (is_digit(*fmt))                                                         //如果当前字符是数字
 			field_width = skip_atoi(&fmt);
-		else if (*fmt == '*') {//如果是当前字符是*
+		else if (*fmt == '*') {                                                     //如果是当前字符是*
 			/* it's the next argument */
-			field_width = va_arg(args, int);//field_width取下一个参数的int类型的值
+			field_width = va_arg(args, int);                                        //field_width取下一个参数的int类型的值
 			if (field_width < 0) {
 				field_width = -field_width;
 				flags |= LEFT;
@@ -165,12 +164,12 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 		/* get the precision */
 		precision = -1;
 		if (*fmt == '.') {
-			++fmt;	//如果fmt是点，向后移动一位
-			if (is_digit(*fmt))//判断是不是数字字符
+			++fmt;	                                                                //如果fmt是点，向后移动一位
+			if (is_digit(*fmt))                                                     //判断是不是数字字符
 				precision = skip_atoi(&fmt);
 			else if (*fmt == '*') {
 				/* it's the next argument */
-				precision = va_arg(args, int);//获取下一个参数值
+				precision = va_arg(args, int);                                      //获取下一个参数值
 			}
 			if (precision < 0)
 				precision = 0;
@@ -183,8 +182,8 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			++fmt;
 		}
 
-		switch (*fmt) {//判断类型
-		case 'c'://字符型
+		switch (*fmt) {                                                             //判断类型
+		case 'c':                                                                   //字符型
 			if (!(flags & LEFT))
 				while (--field_width > 0)
 					*str++ = ' ';
@@ -193,7 +192,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				*str++ = ' ';
 			break;
 
-		case 's'://字符串型
+		case 's':                                                                   //字符串型
 			s = va_arg(args, char *);
 			if (!s)
 				s = "<NULL>";
@@ -212,12 +211,12 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				*str++ = ' ';
 			break;
 
-		case 'o'://八进制型
+		case 'o':                                                                   //八进制型
 			str = number(str, va_arg(args, unsigned long), 8,
 				field_width, precision, flags);
 			break;
 
-		case 'p'://指针型
+		case 'p':                                                                   //指针型
 			if (field_width == -1) {
 				field_width = 8;
 				flags |= ZEROPAD;
@@ -227,22 +226,22 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				field_width, precision, flags);
 			break;
 
-		case 'x'://十六进制型
+		case 'x':                                                                   //十六进制型
 			flags |= SMALL;
-		case 'X'://大写十六进制
+		case 'X':                                                                   //大写十六进制
 			str = number(str, va_arg(args, unsigned long), 16,
 				field_width, precision, flags);
 			break;
 
-		case 'd'://十进制型
+		case 'd':                                                                   //十进制型
 		case 'i':
 			flags |= SIGN;
-		case 'u'://无符号整形
+		case 'u':                                                                   //无符号整形
 			str = number(str, va_arg(args, unsigned long), 10,
 				field_width, precision, flags);
 			break;
 
-		case 'n'://字符个数
+		case 'n':                                                                   //字符个数
 			ip = va_arg(args, int *);
 			*ip = (str - buf);
 			break;
@@ -257,18 +256,18 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			break;
 		}
 	}
-	*str = '\0';//结束
-	return str-buf;//返回字符个数
+	*str = '\0';                                                                    //结束
+	return str-buf;                                                                 //返回字符个数
 }
 
 int sprintf(char * buf, const char *fmt, ...)
 {
-	va_list args;//初始化列表指针
+	va_list args;                                                                   //初始化列表指针
 	int i;
 
 	va_start(args, fmt);
-	i=vsprintf(buf,fmt,args);//格式化输出到buf指向的字符串并接受个数
+	i=vsprintf(buf,fmt,args);                                                       //格式化输出到buf指向的字符串并接受个数
 	va_end(args);
-	return i;//返回格式化输出的字符个数
+	return i;                                                                       //返回格式化输出的字符个数
 }
 
